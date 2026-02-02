@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Table, Boolean
 from sqlalchemy.orm import relationship
-from core.database import Base
+from ..core.database import Base
 
 organization_activities = Table(
     "organization_activities",
