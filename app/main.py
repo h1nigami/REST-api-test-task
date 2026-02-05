@@ -1,13 +1,33 @@
 from fastapi import FastAPI
-import asyncio
-from .core.database import engine, Base
-from .models import *
+from contextlib import asynccontextmanager
+from app.core.database import engine, Base
+from app.api.v1 import activities, buildings, organization
 
-app = FastAPI()
-
-
-@app.on_event("startup")
-async def init_models():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Создание таблиц при запуске
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    print("База данных инициализирована")
+    yield
+    # Очистка при завершении
+    await engine.dispose()
 
+app = FastAPI(
+    title="Building Management API",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+app.include_router(buildings.router, prefix="/api/v1", tags=["buildings"])
+app.include_router(organization.router, prefix="/api/v1", tags=["organizations"])
+app.include_router(activities.router, prefix="/api/v1", tags=["activities"])
+
+@app.get("/")
+async def root():
+    return {
+        "message": "Building Management API",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "redoc": "/redoc"
+    }

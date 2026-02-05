@@ -1,15 +1,29 @@
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from __future__ import annotations
+from pydantic import BaseModel, Field
+from typing import Optional, List
+from datetime import datetime
 
-class BuildingSimple(BaseModel):
-    id: int
+class BuildingBase(BaseModel):
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     address: str
-    latitude: float
-    longitude: float
-    
-    model_config = ConfigDict(from_attributes=True)
 
-class BuildingWithOrganizations(BuildingSimple):
-    organizations: List['OrganizationSimple'] = []
+class BuildingCreate(BuildingBase):
+    pass
+
+class BuildingUpdate(BaseModel):
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    address: Optional[str] = None
+
+class BuildingResponse(BuildingBase):
+    id: int
     
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        from_attributes = True
+
+class BuildingWithOrganizations(BuildingResponse):
+    organizations: List[dict] = []
+    
+    class Config:
+        from_attributes = True

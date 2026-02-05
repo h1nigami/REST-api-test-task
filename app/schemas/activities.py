@@ -1,16 +1,29 @@
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from __future__ import annotations
+from pydantic import BaseModel, Field
+from typing import Optional, List
+from datetime import datetime
 
-class ActivitySimple(BaseModel):
-    id: int
+class ActivityBase(BaseModel):
     name: str
-    level: int
-    
-    model_config = ConfigDict(from_attributes=True)
+    description: Optional[str] = None
+    parent_id: Optional[int] = None
 
-class ActivityTree(ActivitySimple):
-    children: List['ActivityTree'] = []
-    
-    model_config = ConfigDict(from_attributes=True)
+class ActivityCreate(ActivityBase):
+    pass
 
-ActivityTree.model_rebuild()
+class ActivityUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    parent_id: Optional[int] = None
+
+class ActivityResponse(ActivityBase):
+    id: int
+    
+    class Config:
+        from_attributes = True
+
+class ActivityTreeResponse(ActivityResponse):
+    children: List[ActivityTreeResponse] = []
+    
+    class Config:
+        from_attributes = True

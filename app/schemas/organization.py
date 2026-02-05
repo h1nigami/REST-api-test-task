@@ -1,20 +1,37 @@
-from pydantic import BaseModel, Field, ConfigDict
+from __future__ import annotations
+from pydantic import BaseModel, Field, validator
 from typing import Optional, List
+from datetime import datetime
 
-class OrganizationSimple(BaseModel):
-    id: int
+class OrganizationBase(BaseModel):
     name: str
-    
-    model_config = ConfigDict(from_attributes=True)
-
-class OrganizationDetail(OrganizationSimple):
+    phone_number: str
     description: Optional[str] = None
-    building: Optional['BuildingSimple'] = None
-    activities: List['ActivitySimple'] = []
-    
-    model_config = ConfigDict(from_attributes=True)
+    building_id: Optional[int] = None
 
-class OrganizationWithDistance(OrganizationDetail):
-    distance_km: float
+class OrganizationCreate(OrganizationBase):
+    @validator('phone_number')
+    def validate_phone(cls, v):
+        digits = ''.join(filter(str.isdigit, v))
+        if len(digits) < 10:
+            raise ValueError('Номер телефона должен содержать минимум 10 цифр')
+        return v
+
+class OrganizationUpdate(BaseModel):
+    name: Optional[str] = None
+    phone_number: Optional[str] = None
+    description: Optional[str] = None
+    building_id: Optional[int] = None
+
+class OrganizationResponse(OrganizationBase):
+    id: int
     
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        from_attributes = True
+
+class OrganizationWithDetails(OrganizationResponse):
+    building: Optional[dict] = None
+    activities: List[dict] = []
+    
+    class Config:
+        from_attributes = True

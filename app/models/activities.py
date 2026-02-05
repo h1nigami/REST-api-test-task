@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship, backref
-from ..core.database import Base
+from app.core.database import Base
 
 class Activity(Base):
     __tablename__ = "activities"
@@ -9,8 +9,9 @@ class Activity(Base):
     name = Column(String, unique=True, index=True)
     description = Column(String, nullable=True)
     parent_id = Column(Integer, ForeignKey("activities.id"), nullable=True)
+    
     parent = relationship(
-        "Organization",
+        "Activity",
         remote_side=[id],
         backref=backref("children", cascade="all, delete-orphan"),
         lazy="joined"

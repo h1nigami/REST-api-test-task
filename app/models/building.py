@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from ..core.database import Base
+from app.core.database import Base
 
 class Building(Base):
     __tablename__ = "buildings"
@@ -10,7 +10,4 @@ class Building(Base):
     longitude = Column(Float)
     address = Column(String)
 
-    organization = relationship(
-        "Organization",
-        back_populates="placement",
-    )
+    organizations = relationship("Organization", back_populates="building")
