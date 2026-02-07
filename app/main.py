@@ -31,3 +31,10 @@ async def root():
         "docs": "/docs",
         "redoc": "/redoc"
     }
+
+@app.get("/seed")
+async def seed():
+    """Заполнение бд тестовыми данными"""
+    from .scripts import seed_database as seed
+    await seed.seed_database()
+    return {"message": "База данных заполнена"}

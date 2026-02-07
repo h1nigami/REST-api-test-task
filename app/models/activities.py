@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.sql import func
 from app.core.database import Base
 
 class Activity(Base):
@@ -9,6 +10,9 @@ class Activity(Base):
     name = Column(String, unique=True, index=True)
     description = Column(String, nullable=True)
     parent_id = Column(Integer, ForeignKey("activities.id"), nullable=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     parent = relationship(
         "Activity",

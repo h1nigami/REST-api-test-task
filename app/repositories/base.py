@@ -33,7 +33,7 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return [self._to_dict(obj) for obj in result.scalars().all()]
     
     async def create(self, obj_in: CreateSchemaType) -> Dict[str, Any]:
-        db_obj = self.model(**obj_in.dict(exclude_unset=True))
+        db_obj = self.model(**obj_in.model_dump(exclude_unset=True))
         self.session.add(db_obj)
         await self.session.flush()
         await self.session.refresh(db_obj)

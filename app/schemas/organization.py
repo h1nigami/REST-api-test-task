@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
 from datetime import datetime
 
@@ -10,7 +10,7 @@ class OrganizationBase(BaseModel):
     building_id: Optional[int] = None
 
 class OrganizationCreate(OrganizationBase):
-    @validator('phone_number')
+    @field_validator('phone_number')
     def validate_phone(cls, v):
         digits = ''.join(filter(str.isdigit, v))
         if len(digits) < 10:
